@@ -7,22 +7,13 @@ INPUT = {}
 --table.insert(INPUT,{7,5,3})
 --table.insert(INPUT,{2,4,6,8})
 
--- Create table with single line of values for INPUT...
-function AddLine(line)
+-- Read input data...
+for line in io.lines("input") do
   local out, tins = {}, table.insert
   for num in line:gmatch("(%d+)%s-") do
     tins(out, tonumber(num))
   end
-  return out
-end
-
-
--- Read input data...
-local file, tins = io.open("input", "r"), table.insert
-local line = file:read("*l")
-while (line) do
-  tins(INPUT, AddLine(line))
-  line = file:read("*l")
+  tins(INPUT, out)
 end
 
 -- Calculate 'High/Low' Diff Checksum...

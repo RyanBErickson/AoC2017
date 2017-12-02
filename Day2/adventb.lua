@@ -1,4 +1,3 @@
-
 print("Day 2b")
 
 INPUT = {}
@@ -7,23 +6,13 @@ INPUT = {}
 --table.insert(INPUT,{9, 4, 7, 3})
 --table.insert(INPUT,{3, 8, 6, 5})
 
-
--- Create table with single line of values for INPUT...
-function AddLine(line)
+-- Read input data...
+for line in io.lines("input") do
   local out, tins = {}, table.insert
   for num in line:gmatch("(%d+)%s-") do
     tins(out, tonumber(num))
   end
-  return out
-end
-
-
--- Read input data...
-local file, tins = io.open("input", "r"), table.insert
-local line = file:read("*l")
-while (line) do
-  tins(INPUT, AddLine(line))
-  line = file:read("*l")
+  tins(INPUT, out)
 end
 
 -- Calculate 'Divisibles' Checksum...

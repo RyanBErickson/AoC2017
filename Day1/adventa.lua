@@ -7,18 +7,8 @@ INPUT = {}
 --table.insert(INPUT, {['91212129'] = 9})
 
 -- Read actual input data...
-local file = io.open("input", "r")
-local line = file:read("*l")
-if (line) then
-  --print(line)
+for line in io.lines("input") do
   table.insert(INPUT, {[tostring(line)] = '?'})
-  while (line) do
-    line = file:read("*l")
-    if (line) then
-      --print(line)
-      table.insert(INPUT, {[tostring(line)] = '?'})
-    end
-  end
 end
 
 -- Calculate
