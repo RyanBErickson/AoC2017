@@ -27,7 +27,7 @@ function ReadData(fn)
 end
 
 
--- Calculate 'High/Low' Diff Checksum...
+-- Check if word has been seen before in line. If so, return false, otherwise true.  Track seen words in words table.
 function Day4a(input)
   local words = {}
   for word in input:gmatch("(%S+)%s-") do
@@ -100,8 +100,6 @@ function Permute(str)
   return gPermutations
 end
 
-
---for k,v in pairs(Permute("AABCD")) do print(k,v) end
 
 function Day4b(input)
   local words = {}
