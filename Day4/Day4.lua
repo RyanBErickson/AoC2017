@@ -5,6 +5,12 @@
 -- Part B was a bit harder, as I didn't know offhand how to generate the permutations for the anagrams.
 -- I tried on my own for a while, and ended up looking up a permutation algorithm, which I implemented poorly (but quickly) in Lua.
 -- It does use global variables, which is stupid, and I could probably fix it and make it much nicer, and maybe faster (it's slooow).
+--
+-- Looking at other's samples, it appears that I've done it the hardest way, by figuring out *all* anagrams of the word.
+-- I could've just sorted the letters in the word in order, and compared against each word sorted in order, which
+-- would be *MUCH* faster and *MUCH* easier.  Duh.
+--
+-- :)
 
 print("Day 4")
 
