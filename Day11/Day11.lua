@@ -13,7 +13,7 @@ for line in io.lines("input") do
   table.insert(INPUT, line)
 end
 
--- 'cubical' hex grid layout
+-- 'Cube coordinates' for hex grid (https://www.redblobgames.com/grids/hexagons/#distances-cube)
 CUBE_MAP = {}
 CUBE_MAP.n  = { 0,  1, -1}
 CUBE_MAP.ne = { 1,  0, -1}
@@ -23,39 +23,37 @@ CUBE_MAP.sw = {-1,  0,  1}
 CUBE_MAP.nw = {-1,  1,  0}
 
 
-function Day11a(input)
-  print(input)
-  input = input .. ","
-
-  local x, y, z = 0, 0, 0
-  local maxdist = 0
-
-  for direction in input:gmatch("(.-),") do
-
-    local map = CUBE_MAP[direction]
-
-    --print("dir: " .. direction .. " dx: " .. map[1] .. " dy: " .. map[2] .. " dz: " .. map[3])
-
-    x = x + map[1]
-    y = y + map[2]
-    z = z + map[3]
-
-    local dist = (math.abs(x) + math.abs(y) + math.abs(z))/2
-    if (dist > maxdist) then maxdist = dist end
-  end
-
-  print("x: " .. x .. " y: " .. y .. " z: " .. z)
-  print("distance: " .. (math.abs(x) + math.abs(y) + math.abs(z))/2)
-  print("max distance: " .. maxdist)
+function getdist(x,y,z)
+  local abs = math.abs
+  return (abs(x) + abs(y) + abs(z))/2
 end
 
 
-TESTDATA = {}
-table.insert(TESTDATA, {["ne,ne,ne"] = 3})
-table.insert(TESTDATA, {["ne,ne,sw,sw"] = 0})
-table.insert(TESTDATA, {["ne,ne,s,s"] = 2})
-table.insert(TESTDATA, {["se,sw,se,sw,sw"] = 3})
+function Day11(input)
+  input = input .. ","
 
---Day11a(next(TESTDATA[4]))
-Day11a(INPUT[1])
+  local x, y, z = 0, 0, 0
+  local dist, maxdist = 0, 0
+
+  for direction in input:gmatch("(.-),") do
+
+    local dx, dy, dz = unpack(CUBE_MAP[direction])
+    --print("dir: " .. direction .. " dx: " .. dx .. " dy: " .. dy .. " dz: " .. dz)
+    x, y, z = x + dx, y + dy, z + dz
+
+    dist = getdist(x,y,z)
+    if (dist > maxdist) then maxdist = dist end
+  end
+
+  return dist, maxdist
+end
+
+
+assert(Day11("ne,ne,ne") == 3)
+assert(Day11("ne,ne,sw,sw") == 0)
+assert(Day11("ne,ne,s,s") == 2)
+assert(Day11("se,sw,se,sw,sw") == 3)
+
+local dist, max = Day11(INPUT[1])
+print("Distance: " .. dist .. " Max Distance: " .. max)
 
