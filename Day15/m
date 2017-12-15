@@ -1,1 +1,2 @@
-luajit Day15.lua
+#luajit Day15.lua
+luajit Day15Closures.lua
