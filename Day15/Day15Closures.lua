@@ -2,20 +2,14 @@
 -- Day15 with actual closure-based generators (iterators) in Lua...
 
 function genGenerator(factor, START, mod2)
-  local MOD = 2147483647
-  local val = START
-  if (mod2 == nil) then          -- PartA Generator
-    return function ()
-      val = val * factor % MOD
-      return val
-    end
-  else                           -- PartB Generator (adds check for mod 4 or mod 8)
-    return function ()
-      repeat
-        val = val * factor % MOD
-      until (val % mod2) == 0
-      return val
-    end
+  local DIVISOR = 2147483647
+  local value = START
+  mod2 = mod2 or 1
+  return function ()
+    repeat
+      value = value * factor % DIVISOR
+    until (value % mod2) == 0
+    return value
   end
 end
 
@@ -32,8 +26,7 @@ end
 
 
 function Day15(STARTA, STARTB)
-  print("Day15")
-
+  print("--------------- Day 15 -------------")
   print("Part A Count: " .. iter(40000000, genGenerator(16807, STARTA), genGenerator(48271, STARTB)))
   print("Part B Count: " .. iter(5000000, genGenerator(16807, STARTA, 4), genGenerator(48271, STARTB, 8)))
 end
