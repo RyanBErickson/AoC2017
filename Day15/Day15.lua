@@ -4,6 +4,7 @@
 Day 15: Solved PartA easily enough, then PartB threw me, since I was running both generators *in the loop*, and keeping A values in a table.
         Didn't think that I should only generate each until I get a value.  First puzzle I had to look for a clue on Reddit.
         Clue said: "It says generator, use generators.".  All the clue I needed.
+        Yes, they're not real 'generators' in that they don't encapsulate the next functionality... but it gave me the clue.
 
 Generator A starts with 618
 Generator B starts with 814
