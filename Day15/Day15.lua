@@ -49,6 +49,6 @@ function Day15(A, B)
   print("count: " .. count)
 end
 
-Day15(65, 8921) -- Test Data
+--Day15(65, 8921) -- Test Data
 Day15(618, 814) -- My Data
 
