@@ -46,13 +46,11 @@ function copyplus(t, v)
 end
 
 
-function copy(arr)
+function copy(arr) -- non-iterating copy about 2x faster...  Still inefficient.  :)
   local out = {}
-  for k,v in pairs(arr) do
-    out[k] = {}
-    for k1, v1 in pairs(v) do
-      out[k][k1] = v1
-    end
+  for i = 1, #arr do
+    local a = arr[i]
+    out[i] = {left = a.left, right = a.right, strength = a.strength}
   end
   return out
 end
@@ -106,6 +104,6 @@ for line in io.lines("input") do
   table.insert(INPUT, line)
 end
 
-Day24(TEST)
---Day24(INPUT)
+--Day24(TEST)
+Day24(INPUT)
 
