@@ -9,47 +9,40 @@ Day 24: Combinations recursively...
 print("---------------- Day 24 ----------------")
 
 
-function Day24(input, eval, bursts)
+function Day24(input)
   local pieces = {}
-  local startpieces = {}
 
   -- Read Input into component pieces...
-  local i = 1
   for _, line in pairs(input) do
-    for c, d in line:gfind('(%d+)%/(%d+)') do
-      c = tonumber(c) or -1
-      d = tonumber(d) or -1
-      if (c == -1 or d == -1) then print("------------invalid piece.------------") end
-      pieces[i] = {c1 = c, c2 = d, val = c+d}
-      if (c == 0 or d == 0) then
-        table.insert(startpieces, i)
-      end
-      i = i + 1
+    for left, right in line:gfind('(%d+)%/(%d+)') do
+      left, right = tonumber(left), tonumber(right)
+      table.insert(pieces, {left = left, right = right, strength = left+right})
     end
   end
 
-  -- Start with a 0 port, make a bridge, make all possible bridges, find highest 'strength'
-  -- Each piece can only be used once.
-  local num = 1
-  for _, i in pairs(startpieces) do
-    print(num .. " of " .. #startpieces .. " start pieces: " .. pieces[i].c1 .. "/" .. pieces[i].c2)
-    num = num + 1
+  -- Start with each 0 port, recursively find all bridges (solve)...  Each piece can only be used once.
+  solve(0, pieces, {})
 
-    local val = pieces[i].val
-    local cur = pieces[i].c2
-    local np = copy(pieces)
-    table.remove(np, i)
-    local path = {}
-    table.insert(path, {c1 = pieces[i].c1, c2 = pieces[i].c2, val = pieces[i].val})
-    solve(cur, np, path)
-  end
-
-  print()
-  print("--------------------------------")
   print("Part A MAX: " .. gMax)
-  print("--------------------------------")
+  print("----------------------------------------")
   print("Part B MAXLEN: " .. gMaxLen)
   print("Part B MAX: " .. gMaxLenStrength)
+end
+
+
+-- Copy table, remove component at index...  This is inefficient...
+function copyminus(t, i)
+  local nt = copy(t)
+  table.remove(nt, i)
+  return nt
+end
+
+
+-- Copy table, add specified component...  This is inefficient...
+function copyplus(t, v)
+  local nt = copy(t)
+  table.insert(nt, v)
+  return nt
 end
 
 
@@ -67,42 +60,31 @@ end
 
 function solve(cur, pieces, path)
   for i = 1, #pieces do
-    if (pieces[i].c1 == cur) or (pieces[i].c2 == cur) then
-      local npath = copy(path)
-      table.insert(npath, {c1 = pieces[i].c1, c2 = pieces[i].c2, val = pieces[i].val})
-      local np = copy(pieces)
-      table.remove(np, i)
-      if (pieces[i].c1 == cur) then
-        solve(pieces[i].c2, np, npath)
-      else
-        solve(pieces[i].c1, np, npath)
-      end
+    local piece = pieces[i]
+    if (piece.left == cur) then
+      solve(piece.right, copyminus(pieces, i), copyplus(path, piece))
+    elseif (piece.right == cur) then
+      solve(piece.left, copyminus(pieces, i), copyplus(path, piece))
     end
   end
 
-  -- show path...
-  local out = {}
-  local max = 0
-  local len = 0
-  gMax = gMax or 0
-  gMaxLen = gMaxLen or 0
-  gMaxLenStrength = gMaxLenStrength or 0
+  -- Calc path strength and length...
+  local strength, length = 0, 0
   for r = 1, #path do
-    max = max + path[r].val
-    len = len + 1
-    table.insert(out, path[r].c1 .. "/" .. path[r].c2)
+    strength = strength + path[r].strength
+    length = length + 1
   end
 
   -- Part A calculation
-  if (max > gMax) then gMax = max end
+  if (strength > (gMax or 0)) then gMax = strength end
 
   -- Part B calculation
-  if (len > gMaxLen) then
-    gMaxLen = len
-    gMaxLenStrength = max
-  elseif (len == gMaxLen) then
-    if (max > gMaxLenStrength) then
-      gMaxLenStrength = max
+  if (length > (gMaxLen or 0)) then
+    gMaxLen = length
+    gMaxLenStrength = strength
+  elseif (length == (gMaxLen or 0)) then
+    if (strength > (gMaxLenStrength or 0)) then
+      gMaxLenStrength = strength
     end
   end
 end
@@ -123,7 +105,6 @@ INPUT = {}
 for line in io.lines("input") do
   table.insert(INPUT, line)
 end
-
 
 Day24(TEST)
 --Day24(INPUT)
