@@ -10,73 +10,64 @@ print("---------------- Day 25 ----------------")
 
 
 function Day25(input)
-  local tape = {}
   local states = {}
-  local current_state = ""
-  local diag_breakpoint_step = 0
-  local _, state, ifval, writeval, movedir
+  local current_state, max_steps
+
+  local val, state, ifval -- Temporaries during reading
+  local MOVE = {left = -1, right = 1}
 
   -- Read States into states array
   for _, line in pairs(input) do
-    if (line:find('Begin in')) then
-      _, _, current_state = line:find('Begin in state (.-)%.')
-    end
-    if (line:find('Perform a diag')) then
-      _, _, diag_breakpoint_step = line:find('Perform a diagnostic checksum after (%d-) steps.')
-      diag_breakpoint_step = tonumber(diag_breakpoint_step)
-    end
-    if (line:find('In state')) then
-      _, _, state = line:find('In state (.-):')
-      states[state] = {}
-    end
-    if (line:find('If the current')) then
-      _, _, ifval = line:find('If the current value is (.-):')
-      ifval = tonumber(ifval)
-      states[state][ifval] = {}
-    end
-    if (line:find('- Write the value')) then
-      _, _, writeval = line:find('Write the value (%d+)%.')
-      writeval = tonumber(writeval)
-      states[state][ifval].write = writeval
-    end
-    if (line:find('- Move one slot')) then
-      _, _, movedir = line:find('- Move one slot to the (.-)%.')
-      if (movedir == 'left') then
-        states[state][ifval].move = -1
-      elseif (movedir == 'right') then
-        states[state][ifval].move = 1
-      end
-    end
-    if (line:find('- Continue with')) then
-      _, _, newstate = line:find('- Continue with state (.-)%.')
-      states[state][ifval].newstate = newstate
-    end
+    local _, _, val = line:find('Begin in state (.-)%.')
+    if (val) then current_state = val end
+
+    local _, _, val = line:find('Perform a diagnostic checksum after (%d-) steps.')
+    if (val) then max_steps = tonumber(val) end
+
+    local _, _, val = line:find('In state (.-):')
+    if (val) then state = val states[state] = {} end
+
+    local _, _, val = line:find('If the current value is (.-):')
+    if (val) then ifval = tonumber(val) states[state][ifval] = {} end
+
+    local _, _, val = line:find('Write the value (%d+)%.')
+    if (val) then states[state][ifval].write = tonumber(val) end
+
+    local _, _, val = line:find('- Move one slot to the (.-)%.')
+    if (val) then states[state][ifval].move = MOVE[val] end
+
+    local _, _, val = line:find('- Continue with state (.-)%.')
+    if (val) then states[state][ifval].newstate = val end
   end
 
+  -- Play state machine max_steps...
+  local tape = {}
   local cur_pos = 0
   local min, max = 0, 0
-  for i = 1, diag_breakpoint_step do
-    local cur_val = tape[cur_pos] or 0
+  for i = 1, max_steps do
+    -- Read value under cursor
+    local cur_val = tape[cur_pos] or 0 -- cells default to 0
 
+    -- Get state actions for value and current state
     local state = states[current_state]
     local actions = state[cur_val]
-    tape[cur_pos] = actions.write
-    cur_pos = cur_pos + actions.move
 
+    tape[cur_pos] = actions.write         -- Write
+    cur_pos = cur_pos + actions.move      -- Move
+    current_state = actions.newstate      -- New State
+
+    -- Track min/max positions on tape, for calculating checksum later...
     if cur_pos > max then max = cur_pos end
     if cur_pos < min then min = cur_pos end
-    current_state = actions.newstate
   end
   
   -- Calculate checksum...
   local checksum = 0
   for i = min, max do
-    if (tape[i] == 1) then
-      checksum = checksum + 1
-    end
+    checksum = checksum + tape[i]
   end
 
-  print('checksum: ' .. checksum)
+  return checksum
 end
 
 
@@ -106,12 +97,14 @@ table.insert(TEST, "- Write the value 1.")
 table.insert(TEST, "- Move one slot to the right.")
 table.insert(TEST, "- Continue with state A.")
 
+assert(Day25(TEST) == 3)
+
 
 INPUT = {}
 for line in io.lines("input") do
   table.insert(INPUT, line)
 end
 
---Day25(TEST)
-Day25(INPUT)
+local cs = Day25(INPUT)
+print('Checksum: ' .. cs)
 
